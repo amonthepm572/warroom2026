@@ -3,56 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WAR ROOM 2026</title>
+    <title>WAR ROOM 2026 - FIT</title>
     
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="theme-color" content="#000000">
-    
-    <link rel="manifest" href="data:application/manifest+json,{'name':'War Room 2026','short_name':'WarRoom','start_url':'index.html','display':'standalone','background_color':'#000','theme_color':'#000','orientation':'portrait','icons':[{'src':'https://cdn-icons-png.flaticon.com/512/715/715008.png','sizes':'512x512','type':'image/png','purpose':'any'}]}">
+    <link rel="manifest" href="data:application/manifest+json,{'name':'WarRoom2026','short_name':'WarRoom','start_url':'index.html','display':'standalone','background_color':'#000','theme_color':'#000','orientation':'portrait'}">
 
     <style>
         * { box-sizing: border-box; }
-        body { margin: 0; padding: 4px; background: #000; font-family: sans-serif; color: white; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        /* บังคับห้าม Scroll ทุกกรณี */
+        body { 
+            margin: 0; padding: 4px; background: #000; 
+            font-family: sans-serif; color: white; 
+            height: 100vh; width: 100vw;
+            display: flex; flex-direction: column; 
+            overflow: hidden; 
+        }
         
         /* Layout สำหรับ Desktop */
-        .container { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); gap: 6px; flex-grow: 1; height: 70%; }
+        .container { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            grid-template-rows: repeat(2, 1fr); 
+            gap: 4px; 
+            width: 100%; 
+            height: 100%; /* ใช้พื้นที่เต็มหน้าจอ */
+        }
         
-        /* Layout สำหรับมือถือ (แนวตั้ง) */
+        /* Layout สำหรับมือถือแนวตั้ง (บังคับทุกอย่างให้พอดีหน้าจอเดียว) */
         @media (max-width: 768px) {
-            body { overflow-y: auto; height: auto; }
-            .container { grid-template-columns: 1fr; grid-template-rows: auto; height: auto; display: block; }
-            .tv-slot { height: 220px; margin-bottom: 8px; border-width: 1px !important; }
-            .control-area { height: 450px !important; margin-bottom: 20px; }
-            .remote-grid { grid-template-columns: repeat(2, 1fr) !important; }
+            .container { 
+                grid-template-columns: 1fr 1fr; /* แบ่ง 2 คอลัมน์ */
+                grid-template-rows: repeat(3, 1fr); /* แบ่ง 3 แถว เพื่อให้ครบ 6 ช่อง (5 จอ + 1 รีโมท) */
+            }
+            .remote-grid { grid-template-columns: repeat(5, 1fr) !important; } /* รีโมทเล็กลงให้พอดีช่อง */
+            .rem-btn { font-size: 6px !important; padding: 4px 0 !important; }
+            .column-label { font-size: 7px !important; }
+            .tools button { font-size: 9px !important; padding: 5px !important; }
         }
 
-        .tv-slot { display: flex; flex-direction: column; background: #111; border: 1px solid #333; border-radius: 4px; overflow: hidden; position: relative; }
-        .tv-slot.active-scan { border: 2px solid #00ff00; box-shadow: 0 0 10px #00ff00; }
-        .header { background: #1a1a1a; color: #00bfff; padding: 0 8px; font-size: 10px; height: 22px; display: flex; align-items: center; font-weight: bold; border-bottom: 1px solid #000; }
+        .tv-slot { 
+            display: flex; flex-direction: column; 
+            background: #111; border: 1px solid #333; 
+            border-radius: 4px; overflow: hidden; 
+        }
+        .tv-slot.active-scan { border: 2px solid #00ff00; }
+        
+        .header { 
+            background: #1a1a1a; color: #00bfff; 
+            padding: 0 5px; font-size: 9px; height: 18px; 
+            display: flex; align-items: center; font-weight: bold; 
+        }
         
         .video-container { position: relative; width: 100%; flex-grow: 1; background: #000; overflow: hidden; }
         iframe { position: absolute; top: -46px; left: 0; width: 100%; height: calc(100% + 46px); border: none; }
         
-        /* Dual Mode จอ 2 */
-        #vc-2.dual-mode { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 2px; }
-        .dual-cell { position: relative; width: 100%; height: 100%; background: #000; overflow: hidden; border: 1px solid #333; }
-        #vc-2.dual-mode iframe { top: -40px; height: calc(100% + 40px); }
+        #vc-2.dual-mode { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+        .dual-cell { position: relative; overflow: hidden; border: 1px solid #222; }
 
-        /* Remote Control */
-        .control-area { background: #111; border: 1px solid #444; border-radius: 4px; display: flex; flex-direction: column; padding: 6px; height: 100%; }
-        .remote-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; flex-grow: 1; overflow-y: auto; }
-        .remote-column { background: #1a1a1a; padding: 4px; border-radius: 2px; border: 1px solid #222; }
-        .column-label { font-size: 9px; color: #ffcc00; text-align: center; margin-bottom: 4px; border-bottom: 1px solid #333; }
+        /* Remote Panel Space Control */
+        .control-area { 
+            background: #111; display: flex; flex-direction: column; 
+            padding: 2px; height: 100%; overflow: hidden;
+        }
+        .remote-grid { 
+            display: grid; grid-template-columns: repeat(5, 1fr); 
+            gap: 2px; flex-grow: 1; overflow-y: auto; 
+        }
+        .remote-column { background: #1a1a1a; padding: 2px; border-radius: 2px; }
+        .column-label { font-size: 8px; color: #ffcc00; text-align: center; margin-bottom: 2px; }
         
-        .rem-btn { width: 100%; background: #2a2a2a; color: #fff; border: 1px solid #333; font-size: 9px; padding: 8px 0; margin-bottom: 3px; cursor: pointer; border-radius: 2px; }
-        .rem-btn:active { background: #00bfff; color: #000; }
+        .rem-btn { width: 100%; background: #2a2a2a; color: #fff; border: none; font-size: 8px; padding: 6px 0; margin-bottom: 2px; cursor: pointer; }
+        .rem-btn:active { background: #00bfff; }
 
-        .tools { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding-top: 6px; margin-top: 4px; border-top: 1px solid #333; }
-        .scan-btn { background: #111; color: #00ff00; border: 1px solid #00ff00; font-size: 11px; padding: 10px; font-weight: bold; border-radius: 4px; }
-        .override-btn { background: #ff3333; color: white; border: none; font-size: 11px; font-weight: bold; border-radius: 4px; padding: 10px; }
-        #time { font-family: monospace; font-size: 12px; color: #00ff00; text-align: center; margin-top: 6px; letter-spacing: 1px; }
+        .tools { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 2px; }
+        .scan-btn { background: #111; color: #00ff00; border: 1px solid #00ff00; font-size: 10px; padding: 6px; font-weight: bold; }
+        .override-btn { background: #ff3333; color: white; border: none; font-size: 10px; font-weight: bold; padding: 6px; }
+        #time { font-family: monospace; font-size: 10px; color: #00ff00; text-align: center; margin-top: 2px; }
     </style>
 </head>
 <body>
@@ -63,13 +91,13 @@
     <div class="tv-slot" id="slot-3"><div class="header" id="head-3">S3</div><div class="video-container" id="vc-3"></div></div>
     <div class="tv-slot" id="slot-4"><div class="header" id="head-4">S4</div><div class="video-container" id="vc-4"></div></div>
     
-    <div class="tv-slot" style="border-color: #555;">
-        <div class="header" style="color:#ff3333; background: #221111;">MASTER REMOTE</div>
+    <div class="tv-slot" id="slot-remote" style="border-color: #555;">
+        <div class="header" style="color:#f33; background: #211;">REMOTE</div>
         <div class="control-area">
             <div class="remote-grid" id="remoteButtons"></div>
             <div class="tools">
-                <button class="override-btn" onclick="activateWarRoom()">OVERRIDE ALL</button>
-                <button class="scan-btn" id="scan-toggle" onclick="toggleScan2()">SCAN S2 (DUAL)</button>
+                <button class="override-btn" onclick="activateWarRoom()">OVERRIDE</button>
+                <button class="scan-btn" id="scan-toggle" onclick="toggleScan2()">SCAN S2</button>
             </div>
             <div id="time">00:00:00</div>
         </div>
@@ -80,118 +108,13 @@
 
 <script>
     const channels = [
-        { n: 'ช่อง 3', u: '59592e08bf6aee4e3ecce051' }, { n: 'ช่อง 7', u: '5abdd28daae73161cb8ef446' }, { n: 'ช่อง 9', u: '5efec3f10f6d9dc4b26c6e77' },
-        { n: 'ไทยรัฐ', u: '60bd9c7b497960d3f9a3e222' }, { n: 'PPTV', u: '5d4bebb6aae7315312049035' }, { n: 'ONE 31', u: '5a1685baaae731375f0eb728' },
-        { n: 'อมรินทร์', u: '5b335b61bf6aee16d8c33382' }, { n: 'Thai PBS', u: '6378ef895b10cf050fd01614' }, { n: 'Workpoint', u: '632f2696fd54ec81809f7920' },
-        { n: 'ช่อง 8', u: '5a127510d817de0fae3b6f2c' }, { n: 'Mono 29', u: '685108b7f5fcd9c3170292f4' }, { n: 'Nation', u: '6378f08337d179394ce585f4' }
+        { n: '3', u: '59592e08bf6aee4e3ecce051' }, { n: '7', u: '5abdd28daae73161cb8ef446' }, { n: '9', u: '5efec3f10f6d9dc4b26c6e77' },
+        { n: 'ไทยรัฐ', u: '60bd9c7b497960d3f9a3e222' }, { n: 'PPTV', u: '5d4bebb6aae7315312049035' }, { n: 'ONE', u: '5a1685baaae731375f0eb728' },
+        { n: 'อมรินทร์', u: '5b335b61bf6aee16d8c33382' }, { n: 'PBS', u: '6378ef895b10cf050fd01614' }, { n: 'WP', u: '632f2696fd54ec81809f7920' },
+        { n: '8', u: '5a127510d817de0fae3b6f2c' }, { n: 'Mono', u: '685108b7f5fcd9c3170292f4' }, { n: 'Nation', u: '6378f08337d179394ce585f4' }
     ];
 
     let scanInterval2 = null;
-    let currentDualSetIdx = 0;
-    let activeInOtherScreens = { 1: 0, 3: 3, 4: 4, 5: 7 }; 
-
-    function createRemote() {
-        const grid = document.getElementById('remoteButtons');
-        [1, 2, 3, 4, 5].forEach(id => {
-            const col = document.createElement('div');
-            col.className = 'remote-column';
-            col.innerHTML = `<div class="column-label">จอ ${id}</div>`;
-            channels.forEach((ch, idx) => {
-                const btn = document.createElement('button');
-                btn.className = 'rem-btn';
-                btn.innerText = ch.n;
-                btn.onclick = () => { 
-                    if(id === 2) stopScan2(); 
-                    if(id !== 2) activeInOtherScreens[id] = idx; 
-                    setChannel(id, idx); 
-                };
-                col.appendChild(btn);
-            });
-            grid.appendChild(col);
-        });
-    }
-
-    function setChannel(id, chIdx) {
-        const container = document.getElementById('vc-' + id);
-        container.classList.remove('dual-mode');
-        container.innerHTML = `<iframe src="https://aisplay.ais.co.th/portal/live?vid=${channels[chIdx].u}&autoplay=1&muted=1" allow="autoplay; fullscreen"></iframe>`;
-        document.getElementById('head-' + id).innerText = `S${id}: ${channels[chIdx].n}`;
-    }
-
-    function getAvailableChannels() {
-        const occupied = Object.values(activeInOtherScreens);
-        return channels.map((ch, i) => ({...ch, i})).filter(ch => !occupied.includes(ch.i));
-    }
-
-    function setDualSetS2() {
-        const container = document.getElementById('vc-2');
-        container.classList.add('dual-mode');
-        const avail = getAvailableChannels();
-        if (avail.length < 2) return;
-        const start = (currentDualSetIdx * 2) % avail.length;
-        const c1 = avail[start], c2 = avail[(start + 1) % avail.length];
-        container.innerHTML = `<div class="dual-cell"><iframe src="https://aisplay.ais.co.th/portal/live?vid=${c1.u}&autoplay=1&muted=1"></iframe></div>
-                               <div class="dual-cell"><iframe src="https://aisplay.ais.co.th/portal/live?vid=${c2.u}&autoplay=1&muted=1"></iframe></div>`;
-        document.getElementById('head-2').innerText = `SCAN: ${c1.n} | ${c2.n}`;
-    }
-
-    function toggleScan2() { if (scanInterval2) stopScan2(); else startScan2(); }
-    function startScan2() {
-        document.getElementById('scan-toggle').innerText = "STOP SCAN";
-        document.getElementById('slot-2').classList.add('active-scan');
-        setDualSetS2();
-        scanInterval2 = setInterval(() => {
-            currentDualSetIdx = (currentDualSetIdx + 1) % Math.ceil(getAvailableChannels().length / 2);
-            setDualSetS2();
-        }, 30000);
-    }
-    function stopScan2() {
-        if (scanInterval2) { clearInterval(scanInterval2); scanInterval2 = null; 
-        document.getElementById('scan-toggle').innerText = "SCAN S2 (DUAL)";
-        document.getElementById('slot-2').classList.remove('active-scan'); }
-    }
-
-    function activateWarRoom() {
-        activeInOtherScreens = { 1: 0, 3: 3, 4: 4, 5: 7 };
-        [1, 3, 4, 5].forEach(id => setChannel(id, activeInOtherScreens[id]));
-        if(!scanInterval2) setChannel(2, 1);
-    }
-
-    // 🔥 บังคับ Service Worker เพื่อให้ Android ยอมรับว่าเป็น App
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            const swCode = "self.addEventListener('fetch', function(e){});";
-            const blob = new Blob([swCode], {type: 'text/javascript'});
-            navigator.serviceWorker.register(URL.createObjectURL(blob));
-        });
-    }
-
-    window.onload = () => { createRemote(); activateWarRoom(); };
-    setInterval(() => { document.getElementById('time').textContent = new Date().toLocaleTimeString('th-TH'); }, 1000);
-</script>
-</body>
-</html>
-            <div class="tools">
-                <button class="override-btn" onclick="activateWarRoom()">OVERRIDE ALL</button>
-                <button class="scan-btn" id="scan-toggle" onclick="toggleScan2()">SCAN S2 (DUAL)</button>
-            </div>
-            <div id="time">00:00:00</div>
-        </div>
-    </div>
-    
-    <div class="tv-slot" id="slot-5"><div class="header" id="head-5">SCREEN 5</div><div class="video-container" id="vc-5"></div></div>
-</div>
-
-<script>
-    const channels = [
-        { n: 'ช่อง 3', u: '59592e08bf6aee4e3ecce051' }, { n: 'ช่อง 7', u: '5abdd28daae73161cb8ef446' }, { n: 'ช่อง 9', u: '5efec3f10f6d9dc4b26c6e77' },
-        { n: 'ไทยรัฐ', u: '60bd9c7b497960d3f9a3e222' }, { n: 'PPTV', u: '5d4bebb6aae7315312049035' }, { n: 'ONE 31', u: '5a1685baaae731375f0eb728' },
-        { n: 'อมรินทร์', u: '5b335b61bf6aee16d8c33382' }, { n: 'Thai PBS', u: '6378ef895b10cf050fd01614' }, { n: 'Workpoint', u: '632f2696fd54ec81809f7920' },
-        { n: 'ช่อง 8', u: '5a127510d817de0fae3b6f2c' }, { n: 'Mono 29', u: '685108b7f5fcd9c3170292f4' }, { n: 'Nation', u: '6378f08337d179394ce585f4' }
-    ];
-
-    let scanInterval2 = null;
-    let currentDualSetIdx = 0;
     let activeInOtherScreens = { 1: 0, 3: 3, 4: 4, 5: 7 }; 
 
     function createRemote() {
@@ -217,10 +140,9 @@
 
     function setChannel(id, chIdx) {
         const container = document.getElementById('vc-' + id);
-        const url = `https://aisplay.ais.co.th/portal/live?vid=${channels[chIdx].u}&autoplay=1&muted=1`;
         container.classList.remove('dual-mode');
-        container.innerHTML = `<iframe src="${url}" allow="autoplay; fullscreen"></iframe>`;
-        document.getElementById('head-' + id).innerText = `S${id}: ${channels[chIdx].n}`;
+        container.innerHTML = `<iframe src="https://aisplay.ais.co.th/portal/live?vid=${channels[chIdx].u}&autoplay=1&muted=1" allow="autoplay; fullscreen"></iframe>`;
+        document.getElementById('head-' + id).innerText = `S${id}:${channels[chIdx].n}`;
     }
 
     function getAvailableChannels() {
@@ -233,11 +155,11 @@
         container.classList.add('dual-mode');
         const avail = getAvailableChannels();
         if (avail.length < 2) return;
-        const start = (currentDualSetIdx * 2) % avail.length;
-        const c1 = avail[start], c2 = avail[(start + 1) % avail.length];
+        const start = (Math.floor(Date.now()/15000) % Math.ceil(avail.length/2)) * 2;
+        const c1 = avail[start % avail.length], c2 = avail[(start + 1) % avail.length];
         container.innerHTML = `<div class="dual-cell"><iframe src="https://aisplay.ais.co.th/portal/live?vid=${c1.u}&autoplay=1&muted=1"></iframe></div>
                                <div class="dual-cell"><iframe src="https://aisplay.ais.co.th/portal/live?vid=${c2.u}&autoplay=1&muted=1"></iframe></div>`;
-        document.getElementById('head-2').innerText = `SCAN: ${c1.n} | ${c2.n}`;
+        document.getElementById('head-2').innerText = `SCAN:${c1.n}|${c2.n}`;
     }
 
     function toggleScan2() { if (scanInterval2) stopScan2(); else startScan2(); }
@@ -245,10 +167,7 @@
         document.getElementById('scan-toggle').innerText = "STOP";
         document.getElementById('slot-2').classList.add('active-scan');
         setDualSetS2();
-        scanInterval2 = setInterval(() => {
-            currentDualSetIdx = (currentDualSetIdx + 1) % Math.ceil(getAvailableChannels().length / 2);
-            setDualSetS2();
-        }, 15000);
+        scanInterval2 = setInterval(setDualSetS2, 15000);
     }
     function stopScan2() {
         if (scanInterval2) { clearInterval(scanInterval2); scanInterval2 = null; 
@@ -262,9 +181,11 @@
         if(!scanInterval2) setChannel(2, 1);
     }
 
-    // Service Worker for PWA
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('data:text/javascript;base64,c2VsZi.hZGRFdmVudExpc3RlbmVyKCdmZXRjaCcsIGZ1bmN0aW9uKGV2ZW50KSB7fSk7');
+        window.addEventListener('load', () => {
+            const blob = new Blob(["self.addEventListener('fetch', function(e){});"], {type: 'text/javascript'});
+            navigator.serviceWorker.register(URL.createObjectURL(blob));
+        });
     }
 
     window.onload = () => { createRemote(); activateWarRoom(); };
@@ -272,4 +193,3 @@
 </script>
 </body>
 </html>
-
