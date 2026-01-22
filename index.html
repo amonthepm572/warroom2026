@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WAR ROOM MASTER - SINGLE HTML PWA</title>
+    <title>WAR ROOM MASTER - CLEAN VERSION</title>
     
     <link rel="manifest" href='data:application/manifest+json,{"name":"Election 2026 War Room","short_name":"WarRoom","start_url":".","display":"fullscreen","background_color":"#000000","theme_color":"#221111","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/711/711245.png","sizes":"512x512","type":"image/png"}]}'>
 
@@ -11,15 +11,16 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
     <style>
-        /* CSS Core: จัดการให้พอดีหน้าจอ 100% ไม่ต้องเลื่อน (No Scroll) */
+        /* CSS Core: ป้องกันการเลื่อนหน้าจอเด็ดขาด */
         * { box-sizing: border-box; }
-        body { 
-            margin: 0; padding: 6px; background: #000; 
-            font-family: 'Segoe UI', sans-serif; height: 100vh; 
-            display: flex; flex-direction: column; color: white; overflow: hidden; 
+        html, body { 
+            margin: 0; padding: 0; background: #000; 
+            font-family: 'Segoe UI', sans-serif; 
+            height: 100vh; width: 100vw; overflow: hidden; 
         }
         
-        /* Layout 3x2: 5 จอวิดีโอ + 1 รีโมท (ตามกฎ 5 ช่องหลัก) */
+        body { padding: 6px; display: flex; flex-direction: column; color: white; }
+        
         .container { 
             display: grid; grid-template-columns: repeat(3, 1fr); 
             grid-template-rows: repeat(2, 1fr); gap: 8px; width: 100%; height: 100%; 
@@ -33,60 +34,42 @@
         
         .header { 
             background: #1a1a1a; color: #00bfff; padding: 0 8px; font-size: 10px; 
-            height: 20px; display: flex; align-items: center; font-weight: bold; border-bottom: 1px solid #000; 
+            height: 22px; display: flex; align-items: center; font-weight: bold; border-bottom: 1px solid #000; 
         }
 
         .video-container { position: relative; width: 100%; flex-grow: 1; background: #000; overflow: hidden; }
         iframe { position: absolute; top: -46px; left: 0; width: 100%; height: calc(100% + 46px); border: none; }
         
-        /* Dual Mode สำหรับการแสกนจอ 2 */
+        /* Dual Mode จอ 2 */
         #vc-2.dual-mode { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 2px; }
         #vc-2.dual-mode iframe { top: -40px; height: calc(100% + 40px); }
         .dual-cell { position: relative; width: 100%; height: 100%; background: #000; overflow: hidden; border: 1px solid #333; }
 
-        /* Master Remote UI */
-        .control-panel { 
-            display: flex; flex-direction: column; height: 100%; 
-            padding: 4px; gap: 4px; overflow: hidden; 
-        }
-        
-        /* กฎ: นาฬิกาต้องอยู่บนสุดของรีโมท */
+        /* Remote Panel */
+        .control-panel { display: flex; flex-direction: column; height: 100%; padding: 4px; gap: 4px; overflow: hidden; }
         #top-clock { 
             background: #000; color: #00ff00; font-family: 'Courier New', monospace; 
-            font-size: 18px; font-weight: bold; text-align: center; padding: 4px; 
-            border: 1px solid #333; border-radius: 2px; letter-spacing: 1px;
+            font-size: 20px; font-weight: bold; text-align: center; padding: 5px; 
+            border: 1px solid #333; border-radius: 2px; 
         }
 
-        /* กฎ: รีโมทห้ามเลื่อน ปุ่มต้องปรับขนาดพอดีจออัตโนมัติ */
-        .remote-grid { 
-            flex-grow: 1; display: grid; grid-template-columns: repeat(5, 1fr); 
-            gap: 3px; min-height: 0; 
-        }
-
-        .remote-column { 
-            background: #151515; display: flex; flex-direction: column; 
-            padding: 1px; border-radius: 2px; border: 1px solid #222;
-        }
-
-        .column-label { 
-            font-size: 8px; color: #ffcc00; text-align: center; 
-            margin-bottom: 2px; border-bottom: 1px solid #333; padding-bottom: 1px; 
-        }
+        .remote-grid { flex-grow: 1; display: grid; grid-template-columns: repeat(5, 1fr); gap: 2px; min-height: 0; }
+        .remote-column { background: #151515; display: flex; flex-direction: column; padding: 1px; border: 1px solid #222; }
+        .column-label { font-size: 9px; color: #ffcc00; text-align: center; border-bottom: 1px solid #333; padding-bottom: 2px; margin-bottom: 2px; }
         
         .rem-btn { 
             flex-grow: 1; background: #2a2a2a; color: #fff; border: none; 
-            font-size: 7.5px; margin-bottom: 1px; cursor: pointer; border-radius: 1px; 
+            font-size: 8px; margin-bottom: 1px; cursor: pointer; border-radius: 1px; 
             display: flex; align-items: center; justify-content: center;
         }
         .rem-btn:hover { background: #00bfff; color: #000; }
 
         .tools-area { 
-            background: #221a1a; padding: 3px; border-radius: 4px; 
-            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 3px; border: 1px solid #442222; 
+            background: #221111; padding: 4px; border-radius: 4px; 
+            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; border: 1px solid #442222; 
         }
-        .status-box { grid-column: span 3; background: #000; padding: 2px; text-align: center; font-size: 9px; color: #00ff00; }
-        
-        select, .scan-btn, .override-btn { font-size: 8.5px; height: 22px; border-radius: 2px; cursor: pointer; font-weight: bold; }
+        .status-box { grid-column: span 3; background: #000; padding: 3px; text-align: center; font-size: 10px; color: #00ff00; }
+        select, .scan-btn, .override-btn { font-size: 9px; height: 25px; border-radius: 2px; cursor: pointer; font-weight: bold; }
         .override-btn { background: #ff3333; color: white; border: none; }
         .scan-btn { background: #222; color: #00ff00; border: 1px solid #00ff00; }
     </style>
@@ -100,7 +83,7 @@
     <div class="tv-slot" id="slot-4"><div class="header" id="head-4">SCREEN 4</div><div class="video-container" id="vc-4"></div></div>
     
     <div class="tv-slot" style="border-color: #555;">
-        <div class="header" style="color:#ff3333; background: #221111;">MASTER REMOTE CONTROL</div>
+        <div class="header" style="color:#ff3333; background: #221111;">MASTER REMOTE</div>
         <div class="control-panel">
             <div id="top-clock">00:00:00</div>
             <div class="remote-grid" id="remoteButtons"></div>
@@ -108,13 +91,10 @@
                 <div class="status-box">S2 SCAN: <span id="now-watching">READY</span></div>
                 <button class="override-btn" onclick="activateWarRoom()">OVERRIDE ALL</button>
                 <select id="scan-speed">
-                    <option value="10000">10 SEC</option>
-                    <option value="15000">15 SEC</option>
-                    <option value="20000">20 SEC</option>
-                    <option value="30000" selected>30 SEC</option>
-                    <option value="60000">1 MIN</option>
+                    <option value="10000">10s</option><option value="20000">20s</option>
+                    <option value="30000" selected>30s</option><option value="60000">1m</option>
                 </select>
-                <button class="scan-btn" id="scan-toggle" onclick="toggleScan2()">SCAN S2 (DUAL)</button>
+                <button class="scan-btn" id="scan-toggle" onclick="toggleScan2()">SCAN S2</button>
             </div>
         </div>
     </div>
@@ -123,27 +103,13 @@
 </div>
 
 <script>
-    // --- PWA Service Worker Inline (Blob) ---
-    if ('serviceWorker' in navigator) {
-        const sw = `self.addEventListener('fetch', e => e.respondWith(fetch(e.request)))`;
-        const blob = new Blob([sw], {type: 'text/javascript'});
-        navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
-    }
-
-    // --- CHANNEL DATABASE ---
     const channels = [
-        { n: 'ช่อง 3', u: '59592e08bf6aee4e3ecce051' },
-        { n: 'ช่อง 7', u: '5abdd28daae73161cb8ef446' },
-        { n: 'ช่อง 9', u: '5efec3f10f6d9dc4b26c6e77' },
-        { n: 'ไทยรัฐ', u: '60bd9c7b497960d3f9a3e222' },
-        { n: 'PPTV', u: '5d4bebb6aae7315312049035' },
-        { n: 'ONE 31', u: '5a1685baaae731375f0eb728' },
-        { n: 'อมรินทร์', u: '5b335b61bf6aee16d8c33382' },
-        { n: 'Thai PBS', u: '6378ef895b10cf050fd01614' },
-        { n: 'Workpoint', u: '632f2696fd54ec81809f7920' },
-        { n: 'ช่อง 8', u: '5a127510d817de0fae3b6f2c' },
-        { n: 'Mono 29', u: '685108b7f5fcd9c3170292f4' },
-        { n: 'Nation', u: '6378f08337d179394ce585f4' }
+        { n: 'ช่อง 3', u: '59592e08bf6aee4e3ecce051' }, { n: 'ช่อง 7', u: '5abdd28daae73161cb8ef446' },
+        { n: 'ช่อง 9', u: '5efec3f10f6d9dc4b26c6e77' }, { n: 'ไทยรัฐ', u: '60bd9c7b497960d3f9a3e222' },
+        { n: 'PPTV', u: '5d4bebb6aae7315312049035' }, { n: 'ONE 31', u: '5a1685baaae731375f0eb728' },
+        { n: 'อมรินทร์', u: '5b335b61bf6aee16d8c33382' }, { n: 'Thai PBS', u: '6378ef895b10cf050fd01614' },
+        { n: 'Workpoint', u: '632f2696fd54ec81809f7920' }, { n: 'ช่อง 8', u: '5a127510d817de0fae3b6f2c' },
+        { n: 'Mono 29', u: '685108b7f5fcd9c3170292f4' }, { n: 'Nation', u: '6378f08337d179394ce585f4' }
     ];
 
     let scanInterval2 = null;
@@ -175,61 +141,38 @@
     }
 
     function getAvailableChannels() {
-        const occupiedIndexes = Object.values(activeInOtherScreens);
-        return channels.map((ch, idx) => ({...ch, originalIndex: idx})).filter(ch => !occupiedIndexes.includes(ch.originalIndex));
+        const occupied = Object.values(activeInOtherScreens);
+        return channels.map((ch, idx) => ({...ch, i: idx})).filter(ch => !occupied.includes(ch.i));
     }
 
-    // กฎ: บล็อคเสียงจอ 2 เมื่อมีการแสกน
     function setDualSetS2() {
         const container = document.getElementById('vc-2');
         container.classList.add('dual-mode');
-        const available = getAvailableChannels();
-        if (available.length < 2) return;
-        const start = (currentDualSetIdx * 2) % available.length;
-        const ch1 = available[start];
-        const ch2 = available[(start + 1) % available.length];
+        const avail = getAvailableChannels();
+        if (avail.length < 2) return;
+        const start = (currentDualSetIdx * 2) % avail.length;
+        const ch1 = avail[start];
+        const ch2 = avail[(start + 1) % avail.length];
         container.innerHTML = `<div class="dual-cell"><iframe src="https://aisplay.ais.co.th/portal/live?vid=${ch1.u}&autoplay=1&muted=1"></iframe></div><div class="dual-cell"><iframe src="https://aisplay.ais.co.th/portal/live?vid=${ch2.u}&autoplay=1&muted=1"></iframe></div>`;
-        document.getElementById('head-2').innerText = `S2 SCAN: ${ch1.n} | ${ch2.n}`;
-        document.getElementById('now-watching').innerText = `MUTED: (SET ${currentDualSetIdx + 1})`;
+        document.getElementById('head-2').innerText = `S2: ${ch1.n} | ${ch2.n}`;
     }
 
-    // กฎ: เปลี่ยนเวลาแล้วยึดตามทันทีโดยไม่หยุดแสกน
-    document.getElementById('scan-speed').addEventListener('change', function() {
+    function toggleScan2() {
         if (scanInterval2) {
-            clearInterval(scanInterval2);
-            scanInterval2 = setInterval(() => {
-                const available = getAvailableChannels();
-                currentDualSetIdx = (currentDualSetIdx + 1) % Math.ceil(available.length / 2);
-                setDualSetS2();
-            }, parseInt(this.value));
-            document.getElementById('now-watching').innerText = `NEW SPEED: ${this.options[this.selectedIndex].text}`;
-        }
-    });
-
-    function toggleScan2() { if (scanInterval2) stopScan2(); else startScan2(); }
-    
-    function startScan2() {
-        const speed = parseInt(document.getElementById('scan-speed').value);
-        document.getElementById('scan-toggle').innerText = "STOP";
-        document.getElementById('scan-toggle').style.background = "#ff3333";
-        document.getElementById('slot-2').classList.add('active-scan');
-        currentDualSetIdx = 0;
-        setDualSetS2();
-        scanInterval2 = setInterval(() => {
-            const available = getAvailableChannels();
-            currentDualSetIdx = (currentDualSetIdx + 1) % Math.ceil(available.length / 2);
-            setDualSetS2();
-        }, speed);
-    }
-
-    function stopScan2() {
-        if (scanInterval2) { 
-            clearInterval(scanInterval2); 
-            scanInterval2 = null; 
-            document.getElementById('scan-toggle').innerText = "SCAN S2 (DUAL)";
+            clearInterval(scanInterval2); scanInterval2 = null;
+            document.getElementById('scan-toggle').innerText = "SCAN S2";
             document.getElementById('scan-toggle').style.background = "#222";
-            document.getElementById('slot-2').classList.remove('active-scan'); 
-            document.getElementById('now-watching').innerText = "READY";
+            document.getElementById('slot-2').classList.remove('active-scan');
+        } else {
+            const speed = parseInt(document.getElementById('scan-speed').value);
+            document.getElementById('scan-toggle').innerText = "STOP";
+            document.getElementById('scan-toggle').style.background = "#f33";
+            document.getElementById('slot-2').classList.add('active-scan');
+            setDualSetS2();
+            scanInterval2 = setInterval(() => {
+                currentDualSetIdx = (currentDualSetIdx + 1) % Math.ceil(getAvailableChannels().length / 2);
+                setDualSetS2();
+            }, speed);
         }
     }
 
@@ -244,173 +187,3 @@
 </script>
 </body>
 </html>
-        
-        .rem-btn { 
-            flex-grow: 1; background: #2a2a2a; color: #fff; border: none; 
-            font-size: 7.5px; margin-bottom: 1px; cursor: pointer; border-radius: 1px; 
-            display: flex; align-items: center; justify-content: center;
-        }
-        .rem-btn:hover { background: #00bfff; color: #000; }
-
-        .tools-area { 
-            background: #221a1a; padding: 3px; border-radius: 4px; 
-            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 3px; border: 1px solid #442222; 
-        }
-        .status-box { grid-column: span 3; background: #000; padding: 2px; text-align: center; font-size: 9px; color: #00ff00; }
-        
-        select, .scan-btn, .override-btn { font-size: 8.5px; height: 22px; border-radius: 2px; cursor: pointer; font-weight: bold; }
-        .override-btn { background: #ff3333; color: white; border: none; }
-        .scan-btn { background: #222; color: #00ff00; border: 1px solid #00ff00; }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <div class="tv-slot" id="slot-1"><div class="header" id="head-1">SCREEN 1</div><div class="video-container" id="vc-1"></div></div>
-    <div class="tv-slot" id="slot-2"><div class="header" id="head-2">SCREEN 2</div><div class="video-container" id="vc-2"></div></div>
-    <div class="tv-slot" id="slot-3"><div class="header" id="head-3">SCREEN 3</div><div class="video-container" id="vc-3"></div></div>
-    <div class="tv-slot" id="slot-4"><div class="header" id="head-4">SCREEN 4</div><div class="video-container" id="vc-4"></div></div>
-    
-    <div class="tv-slot" style="border-color: #555;">
-        <div class="header" style="color:#ff3333; background: #221111;">MASTER REMOTE CONTROL</div>
-        <div class="control-panel">
-            <div id="top-clock">00:00:00</div>
-            <div class="remote-grid" id="remoteButtons"></div>
-            <div class="tools-area">
-                <div class="status-box">S2 SCAN: <span id="now-watching">READY</span></div>
-                <button class="override-btn" onclick="activateWarRoom()">OVERRIDE ALL</button>
-                <select id="scan-speed">
-                    <option value="10000">10 SEC</option>
-                    <option value="15000">15 SEC</option>
-                    <option value="20000">20 SEC</option>
-                    <option value="30000" selected>30 SEC</option>
-                    <option value="60000">1 MIN</option>
-                </select>
-                <button class="scan-btn" id="scan-toggle" onclick="toggleScan2()">SCAN S2 (DUAL)</button>
-            </div>
-        </div>
-    </div>
-    
-    <div class="tv-slot" id="slot-5"><div class="header" id="head-5">SCREEN 5</div><div class="video-container" id="vc-5"></div></div>
-</div>
-
-<script>
-    const channels = [
-        { n: 'ช่อง 3', u: '59592e08bf6aee4e3ecce051' },
-        { n: 'ช่อง 7', u: '5abdd28daae73161cb8ef446' },
-        { n: 'ช่อง 9', u: '5efec3f10f6d9dc4b26c6e77' },
-        { n: 'ไทยรัฐ', u: '60bd9c7b497960d3f9a3e222' },
-        { n: 'PPTV', u: '5d4bebb6aae7315312049035' },
-        { n: 'ONE 31', u: '5a1685baaae731375f0eb728' },
-        { n: 'อมรินทร์', u: '5b335b61bf6aee16d8c33382' },
-        { n: 'Thai PBS', u: '6378ef895b10cf050fd01614' },
-        { n: 'Workpoint', u: '632f2696fd54ec81809f7920' },
-        { n: 'ช่อง 8', u: '5a127510d817de0fae3b6f2c' },
-        { n: 'Mono 29', u: '685108b7f5fcd9c3170292f4' },
-        { n: 'Nation', u: '6378f08337d179394ce585f4' }
-    ];
-
-    let scanInterval2 = null;
-    let currentDualSetIdx = 0;
-    let activeInOtherScreens = { 1: 0, 3: 3, 4: 4, 5: 7 }; 
-
-    function createRemote() {
-        const grid = document.getElementById('remoteButtons');
-        [1, 2, 3, 4, 5].forEach(id => {
-            const col = document.createElement('div');
-            col.className = 'remote-column';
-            col.innerHTML = `<div class="column-label">S${id}</div>`;
-            channels.forEach((ch, idx) => {
-                const btn = document.createElement('button');
-                btn.className = 'rem-btn';
-                btn.innerText = ch.n;
-                btn.onclick = () => { 
-                    if(id === 2) stopScan2(); 
-                    if(id !== 2) activeInOtherScreens[id] = idx; 
-                    setChannel(id, idx); 
-                };
-                col.appendChild(btn);
-            });
-            grid.appendChild(col);
-        });
-    }
-
-    function setChannel(id, chIdx) {
-        const container = document.getElementById('vc-' + id);
-        const url = `https://aisplay.ais.co.th/portal/live?vid=${channels[chIdx].u}&autoplay=1&muted=1`;
-        if (id === 2) container.classList.remove('dual-mode');
-        container.innerHTML = `<iframe src="${url}" allow="autoplay; fullscreen"></iframe>`;
-        document.getElementById('head-' + id).innerText = `S${id}: ${channels[chIdx].n}`;
-    }
-
-    function getAvailableChannels() {
-        const occupiedIndexes = Object.values(activeInOtherScreens);
-        return channels.map((ch, idx) => ({...ch, originalIndex: idx})).filter(ch => !occupiedIndexes.includes(ch.originalIndex));
-    }
-
-    // กฎ: บล็อคเสียงจอ 2 เมื่อแสกน
-    function setDualSetS2() {
-        const container = document.getElementById('vc-2');
-        container.classList.add('dual-mode');
-        const available = getAvailableChannels();
-        if (available.length < 2) return;
-        const start = (currentDualSetIdx * 2) % available.length;
-        const ch1 = available[start];
-        const ch2 = available[(start + 1) % available.length];
-        
-        container.innerHTML = `<div class="dual-cell"><iframe src="https://aisplay.ais.co.th/portal/live?vid=${ch1.u}&autoplay=1&muted=1"></iframe></div><div class="dual-cell"><iframe src="https://aisplay.ais.co.th/portal/live?vid=${ch2.u}&autoplay=1&muted=1"></iframe></div>`;
-        document.getElementById('head-2').innerText = `S2 SCAN: ${ch1.n} | ${ch2.n}`;
-        document.getElementById('now-watching').innerText = `FORCE MUTED (SET ${currentDualSetIdx + 1})`;
-    }
-
-    // กฎ: ยึดตามเวลาที่เปลี่ยนใหม่ทันที
-    document.getElementById('scan-speed').addEventListener('change', function() {
-        if (scanInterval2) {
-            clearInterval(scanInterval2);
-            scanInterval2 = setInterval(() => {
-                const available = getAvailableChannels();
-                currentDualSetIdx = (currentDualSetIdx + 1) % Math.ceil(available.length / 2);
-                setDualSetS2();
-            }, parseInt(this.value));
-            document.getElementById('now-watching').innerText = `SPEED UPDATED: ${this.options[this.selectedIndex].text}`;
-        }
-    });
-
-    function toggleScan2() { if (scanInterval2) stopScan2(); else startScan2(); }
-    
-    function startScan2() {
-        const speed = parseInt(document.getElementById('scan-speed').value);
-        document.getElementById('scan-toggle').innerText = "STOP";
-        document.getElementById('scan-toggle').style.background = "#ff3333";
-        document.getElementById('slot-2').classList.add('active-scan');
-        currentDualSetIdx = 0;
-        setDualSetS2();
-        scanInterval2 = setInterval(() => {
-            const available = getAvailableChannels();
-            currentDualSetIdx = (currentDualSetIdx + 1) % Math.ceil(available.length / 2);
-            setDualSetS2();
-        }, speed);
-    }
-
-    function stopScan2() {
-        if (scanInterval2) { 
-            clearInterval(scanInterval2); 
-            scanInterval2 = null; 
-            document.getElementById('scan-toggle').innerText = "SCAN S2 (DUAL)";
-            document.getElementById('scan-toggle').style.background = "#222";
-            document.getElementById('slot-2').classList.remove('active-scan'); 
-        }
-    }
-
-    function activateWarRoom() {
-        activeInOtherScreens = { 1: 0, 3: 3, 4: 4, 5: 7 };
-        [1, 3, 4, 5].forEach(id => setChannel(id, activeInOtherScreens[id]));
-        if(!scanInterval2) setChannel(2, 1); 
-    }
-
-    window.onload = () => { createRemote(); activateWarRoom(); };
-    setInterval(() => { document.getElementById('top-clock').textContent = new Date().toLocaleTimeString('th-TH'); }, 1000);
-</script>
-</body>
-</html>
-
