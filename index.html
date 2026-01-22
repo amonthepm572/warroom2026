@@ -3,85 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WAR ROOM MASTER - SINGLE PAGE VERSION</title>
+    <title>WAR ROOM MASTER - FORCE OVERRIDE</title>
     <style>
-        /* CSS Core: จัดการให้พอดีหน้าจอ 100% ไม่ต้องเลื่อน */
         * { box-sizing: border-box; }
         body { 
             margin: 0; padding: 6px; background: #000; 
             font-family: 'Segoe UI', sans-serif; height: 100vh; 
             display: flex; flex-direction: column; color: white; overflow: hidden; 
         }
-        
-        /* Layout 3x2 สำหรับ 5 จอ + 1 รีโมท */
         .container { 
             display: grid; grid-template-columns: repeat(3, 1fr); 
             grid-template-rows: repeat(2, 1fr); gap: 8px; width: 100%; height: 100%; 
         }
-
-        .tv-slot { 
-            display: flex; flex-direction: column; background: #111; 
-            border: 1px solid #333; border-radius: 4px; overflow: hidden; position: relative; 
-        }
-        /* สถานะเมื่อมีการแสกน */
+        .tv-slot { display: flex; flex-direction: column; background: #111; border: 1px solid #333; border-radius: 4px; overflow: hidden; position: relative; }
         .tv-slot.active-scan { border: 2px solid #00ff00; box-shadow: 0 0 12px #00ff00; }
-        
-        .header { 
-            background: #1a1a1a; color: #00bfff; padding: 0 8px; font-size: 10px; 
-            height: 20px; display: flex; align-items: center; font-weight: bold; border-bottom: 1px solid #000; 
-        }
-
+        .header { background: #1a1a1a; color: #00bfff; padding: 0 8px; font-size: 10px; height: 20px; display: flex; align-items: center; font-weight: bold; border-bottom: 1px solid #000; }
         .video-container { position: relative; width: 100%; flex-grow: 1; background: #000; overflow: hidden; }
         iframe { position: absolute; top: -46px; left: 0; width: 100%; height: calc(100% + 46px); border: none; }
-        
-        /* Dual Mode สำหรับการแสกนจอ 2 */
-        #vc-2.dual-mode { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 2px; }
+        #vc-2.dual-mode { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; padding: 2px; }
         #vc-2.dual-mode iframe { top: -40px; height: calc(100% + 40px); }
         .dual-cell { position: relative; width: 100%; height: 100%; background: #000; overflow: hidden; border: 1px solid #333; }
-
-        /* --- MASTER REMOTE UI --- */
-        .control-panel { 
-            display: flex; flex-direction: column; height: 100%; 
-            padding: 4px; gap: 4px; overflow: hidden; 
-        }
-        
-        /* กฎ: นาฬิกาต้องอยู่บนสุด */
-        #top-clock { 
-            background: #000; color: #00ff00; font-family: 'Courier New', monospace; 
-            font-size: 18px; font-weight: bold; text-align: center; padding: 4px; 
-            border: 1px solid #333; border-radius: 2px; letter-spacing: 1px;
-        }
-
-        /* กฎ: รีโมทห้ามเลื่อน (Flex-grow buttons) */
-        .remote-grid { 
-            flex-grow: 1; display: grid; grid-template-columns: repeat(5, 1fr); 
-            gap: 3px; min-height: 0; 
-        }
-
-        .remote-column { 
-            background: #151515; display: flex; flex-direction: column; 
-            padding: 1px; border-radius: 2px; border: 1px solid #222;
-        }
-
-        .column-label { 
-            font-size: 8px; color: #ffcc00; text-align: center; 
-            margin-bottom: 2px; border-bottom: 1px solid #333; padding-bottom: 1px; 
-        }
-        
-        .rem-btn { 
-            flex-grow: 1; background: #2a2a2a; color: #fff; border: none; 
-            font-size: 7.5px; margin-bottom: 1px; cursor: pointer; border-radius: 1px; 
-            display: flex; align-items: center; justify-content: center;
-        }
+        .control-panel { display: flex; flex-direction: column; height: 100%; padding: 4px; gap: 4px; overflow: hidden; }
+        #top-clock { background: #000; color: #00ff00; font-family: 'Courier New', monospace; font-size: 16px; font-weight: bold; text-align: center; padding: 2px; border: 1px solid #333; border-radius: 2px; }
+        .remote-grid { flex: 1; display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; min-height: 0; }
+        .remote-column { display: flex; flex-direction: column; background: #151515; padding: 1px; border-radius: 2px; border: 1px solid #222; }
+        .column-label { font-size: 8px; color: #ffcc00; text-align: center; padding: 1px 0; border-bottom: 1px solid #333; margin-bottom: 1px; }
+        .rem-btn { flex: 1; width: 100%; background: #2a2a2a; color: #fff; border: none; font-size: 7px; margin-bottom: 1px; cursor: pointer; border-radius: 1px; display: flex; align-items: center; justify-content: center; min-height: 0; }
         .rem-btn:hover { background: #00bfff; color: #000; }
-
-        .tools-area { 
-            background: #221a1a; padding: 3px; border-radius: 4px; 
-            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 3px; border: 1px solid #442222; 
-        }
+        .rem-btn.active { background: #00bfff; color: #000; font-weight: bold; }
+        .tools-area { background: #221a1a; padding: 3px; border-radius: 4px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 3px; border: 1px solid #442222; }
         .status-box { grid-column: span 3; background: #000; padding: 2px; text-align: center; font-size: 9px; color: #00ff00; }
-        
-        select, .scan-btn, .override-btn { font-size: 8.5px; height: 22px; border-radius: 2px; cursor: pointer; font-weight: bold; }
+        select, .scan-btn, .override-btn { font-size: 9px; height: 24px; border-radius: 2px; cursor: pointer; font-weight: bold; }
         .override-btn { background: #ff3333; color: white; border: none; }
         .scan-btn { background: #222; color: #00ff00; border: 1px solid #00ff00; }
     </style>
@@ -93,19 +45,17 @@
     <div class="tv-slot" id="slot-2"><div class="header" id="head-2">SCREEN 2</div><div class="video-container" id="vc-2"></div></div>
     <div class="tv-slot" id="slot-3"><div class="header" id="head-3">SCREEN 3</div><div class="video-container" id="vc-3"></div></div>
     <div class="tv-slot" id="slot-4"><div class="header" id="head-4">SCREEN 4</div><div class="video-container" id="vc-4"></div></div>
-    
     <div class="tv-slot" style="border-color: #555;">
         <div class="header" style="color:#ff3333; background: #221111;">MASTER REMOTE CONTROL</div>
         <div class="control-panel">
             <div id="top-clock">00:00:00</div>
             <div class="remote-grid" id="remoteButtons"></div>
             <div class="tools-area">
-                <div class="status-box">S2 SCAN: <span id="now-watching">READY</span></div>
-                <button class="override-btn" onclick="activateWarRoom()">OVERRIDE ALL</button>
+                <div class="status-box">SYSTEM: <span id="now-watching">STABLE</span></div>
+                <button class="override-btn" onclick="overrideAll()">OVERRIDE ALL</button>
                 <select id="scan-speed">
                     <option value="10000">10 SEC</option>
                     <option value="15000">15 SEC</option>
-                    <option value="20000">20 SEC</option>
                     <option value="30000" selected>30 SEC</option>
                     <option value="60000">1 MIN</option>
                 </select>
@@ -113,7 +63,6 @@
             </div>
         </div>
     </div>
-    
     <div class="tv-slot" id="slot-5"><div class="header" id="head-5">SCREEN 5</div><div class="video-container" id="vc-5"></div></div>
 </div>
 
@@ -121,24 +70,27 @@
     const channels = [
         { n: 'ช่อง 3', u: '59592e08bf6aee4e3ecce051' },
         { n: 'ช่อง 7', u: '5abdd28daae73161cb8ef446' },
-        { n: 'ช่อง 9', u: '5efec3f10f6d9dc4b26c6e77' },
+        { n: 'Thai PBS', u: '6378ef895b10cf050fd01614' },
         { n: 'ไทยรัฐ', u: '60bd9c7b497960d3f9a3e222' },
         { n: 'PPTV', u: '5d4bebb6aae7315312049035' },
+        { n: 'ช่อง 9', u: '5efec3f10f6d9dc4b26c6e77' },
         { n: 'ONE 31', u: '5a1685baaae731375f0eb728' },
         { n: 'อมรินทร์', u: '5b335b61bf6aee16d8c33382' },
-        { n: 'Thai PBS', u: '6378ef895b10cf050fd01614' },
         { n: 'Workpoint', u: '632f2696fd54ec81809f7920' },
         { n: 'ช่อง 8', u: '5a127510d817de0fae3b6f2c' },
         { n: 'Mono 29', u: '685108b7f5fcd9c3170292f4' },
         { n: 'Nation', u: '6378f08337d179394ce585f4' }
     ];
 
+    // ตั้งค่าเริ่มต้น
+    let screenState = { 1: 0, 2: 1, 3: 2, 4: 3, 5: 4 };
+    let isScanning = false;
     let scanInterval2 = null;
-    let currentDualSetIdx = 0;
-    let activeInOtherScreens = { 1: 0, 3: 3, 4: 4, 5: 7 }; 
+    let frozenDualChannels = null; 
 
     function createRemote() {
         const grid = document.getElementById('remoteButtons');
+        grid.innerHTML = "";
         [1, 2, 3, 4, 5].forEach(id => {
             const col = document.createElement('div');
             col.className = 'remote-column';
@@ -146,92 +98,113 @@
             channels.forEach((ch, idx) => {
                 const btn = document.createElement('button');
                 btn.className = 'rem-btn';
+                btn.id = `btn-${id}-${idx}`;
                 btn.innerText = ch.n;
-                btn.onclick = () => { 
-                    if(id === 2) stopScan2(); 
-                    if(id !== 2) activeInOtherScreens[id] = idx; 
-                    setChannel(id, idx); 
-                };
+                btn.onclick = () => changeChannel(id, idx);
                 col.appendChild(btn);
             });
             grid.appendChild(col);
         });
+        updateRemoteHighlights();
     }
 
-    function setChannel(id, chIdx) {
+    function changeChannel(id, chIdx) {
+        if(id === 2) { frozenDualChannels = null; stopScan2(); }
+        screenState[id] = chIdx; 
+        refreshDisplay(); 
+    }
+
+    function refreshDisplay() {
+        [1, 2, 3, 4, 5].forEach(id => {
+            if (id === 2 && (isScanning || frozenDualChannels)) {
+                renderDualIframe(); 
+            } else {
+                renderIframe(id, screenState[id]);
+            }
+        });
+        updateRemoteHighlights();
+    }
+
+    // แก้ไขใหม่: บังคับกลับมาเป็น 3, 7, PBS, ไทยรัฐ, PPTV
+    function overrideAll() {
+        isScanning = false;
+        if (scanInterval2) clearInterval(scanInterval2);
+        frozenDualChannels = null;
+        
+        // บังคับคืนค่าช่องหลัก 5 ช่อง (ลำดับ 0-4 ใน Array channels)
+        screenState = { 1: 0, 2: 1, 3: 2, 4: 3, 5: 4 };
+
+        const scanBtn = document.getElementById('scan-toggle');
+        scanBtn.innerText = "SCAN S2 (DUAL)";
+        scanBtn.style.background = "#222";
+        document.getElementById('slot-2').classList.remove('active-scan');
+
+        [1, 2, 3, 4, 5].forEach(id => renderIframe(id, screenState[id]));
+        updateRemoteHighlights();
+        document.getElementById('now-watching').innerText = "FORCED MAIN CHANNELS";
+    }
+
+    function renderIframe(id, chIdx) {
         const container = document.getElementById('vc-' + id);
+        if (!container) return;
         const url = `https://aisplay.ais.co.th/portal/live?vid=${channels[chIdx].u}&autoplay=1&muted=1`;
-        if (id === 2) container.classList.remove('dual-mode');
+        container.classList.remove('dual-mode');
         container.innerHTML = `<iframe src="${url}" allow="autoplay; fullscreen"></iframe>`;
         document.getElementById('head-' + id).innerText = `S${id}: ${channels[chIdx].n}`;
     }
 
-    function getAvailableChannels() {
-        const occupiedIndexes = Object.values(activeInOtherScreens);
-        return channels.map((ch, idx) => ({...ch, originalIndex: idx})).filter(ch => !occupiedIndexes.includes(ch.originalIndex));
-    }
-
-    // กฎ: บล็อคเสียงจอ 2 เมื่อแสกน
-    function setDualSetS2() {
+    function renderDualIframe() {
         const container = document.getElementById('vc-2');
+        if (!container || !frozenDualChannels) return;
         container.classList.add('dual-mode');
-        const available = getAvailableChannels();
-        if (available.length < 2) return;
-        const start = (currentDualSetIdx * 2) % available.length;
-        const ch1 = available[start];
-        const ch2 = available[(start + 1) % available.length];
-        
-        container.innerHTML = `<div class="dual-cell"><iframe src="https://aisplay.ais.co.th/portal/live?vid=${ch1.u}&autoplay=1&muted=1"></iframe></div><div class="dual-cell"><iframe src="https://aisplay.ais.co.th/portal/live?vid=${ch2.u}&autoplay=1&muted=1"></iframe></div>`;
-        document.getElementById('head-2').innerText = `S2 SCAN: ${ch1.n} | ${ch2.n}`;
-        document.getElementById('now-watching').innerText = `FORCE MUTED (SET ${currentDualSetIdx + 1})`;
+        const ch1 = frozenDualChannels.ch1;
+        const ch2 = frozenDualChannels.ch2;
+        container.innerHTML = `
+            <div class="dual-cell"><iframe src="https://aisplay.ais.co.th/portal/live?vid=${ch1.u}&autoplay=1&muted=1"></iframe></div>
+            <div class="dual-cell"><iframe src="https://aisplay.ais.co.th/portal/live?vid=${ch2.u}&autoplay=1&muted=1"></iframe></div>`;
+        document.getElementById('head-2').innerText = `S2 ${isScanning ? "SCAN" : "FIX"}: ${ch1.n} | ${ch2.n}`;
     }
 
-    // กฎ: ยึดตามเวลาที่เปลี่ยนใหม่ทันที
-    document.getElementById('scan-speed').addEventListener('change', function() {
-        if (scanInterval2) {
-            clearInterval(scanInterval2);
-            scanInterval2 = setInterval(() => {
-                const available = getAvailableChannels();
-                currentDualSetIdx = (currentDualSetIdx + 1) % Math.ceil(available.length / 2);
-                setDualSetS2();
-            }, parseInt(this.value));
-            document.getElementById('now-watching').innerText = `SPEED UPDATED: ${this.options[this.selectedIndex].text}`;
-        }
-    });
+    function updateRemoteHighlights() {
+        document.querySelectorAll('.rem-btn').forEach(b => b.classList.remove('active'));
+        [1, 2, 3, 4, 5].forEach(id => {
+            if (id === 2 && frozenDualChannels) return;
+            const activeBtn = document.getElementById(`btn-${id}-${screenState[id]}`);
+            if (activeBtn) activeBtn.classList.add('active');
+        });
+    }
 
-    function toggleScan2() { if (scanInterval2) stopScan2(); else startScan2(); }
+    function toggleScan2() { if (isScanning) stopScan2(); else startScan2(); }
     
     function startScan2() {
+        isScanning = true;
         const speed = parseInt(document.getElementById('scan-speed').value);
         document.getElementById('scan-toggle').innerText = "STOP";
         document.getElementById('scan-toggle').style.background = "#ff3333";
         document.getElementById('slot-2').classList.add('active-scan');
-        currentDualSetIdx = 0;
         setDualSetS2();
-        scanInterval2 = setInterval(() => {
-            const available = getAvailableChannels();
-            currentDualSetIdx = (currentDualSetIdx + 1) % Math.ceil(available.length / 2);
-            setDualSetS2();
-        }, speed);
+        scanInterval2 = setInterval(setDualSetS2, speed);
     }
 
     function stopScan2() {
-        if (scanInterval2) { 
-            clearInterval(scanInterval2); 
-            scanInterval2 = null; 
-            document.getElementById('scan-toggle').innerText = "SCAN S2 (DUAL)";
+        if (isScanning) { clearInterval(scanInterval2); isScanning = false; 
+            document.getElementById('scan-toggle').innerText = "RESUME SCAN";
             document.getElementById('scan-toggle').style.background = "#222";
-            document.getElementById('slot-2').classList.remove('active-scan'); 
+            document.getElementById('slot-2').classList.remove('active-scan');
+            updateRemoteHighlights();
         }
     }
 
-    function activateWarRoom() {
-        activeInOtherScreens = { 1: 0, 3: 3, 4: 4, 5: 7 };
-        [1, 3, 4, 5].forEach(id => setChannel(id, activeInOtherScreens[id]));
-        if(!scanInterval2) setChannel(2, 1); 
+    function setDualSetS2() {
+        const occupied = [screenState[1], screenState[3], screenState[4], screenState[5]];
+        const available = channels.map((ch, idx) => ({...ch, originalIndex: idx})).filter(ch => !occupied.includes(ch.originalIndex));
+        if (available.length < 2) return;
+        const start = (Math.floor(Date.now() / 1000) % Math.ceil(available.length / 2)) * 2;
+        frozenDualChannels = { ch1: available[start % available.length], ch2: available[(start + 1) % available.length] };
+        renderDualIframe();
     }
 
-    window.onload = () => { createRemote(); activateWarRoom(); };
+    window.onload = () => { createRemote(); [1, 2, 3, 4, 5].forEach(id => renderIframe(id, screenState[id])); };
     setInterval(() => { document.getElementById('top-clock').textContent = new Date().toLocaleTimeString('th-TH'); }, 1000);
 </script>
 </body>
